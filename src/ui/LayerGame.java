@@ -1,5 +1,8 @@
 package ui;
 
+import config.GameConfig;
+import entity.GameAct;
+
 import java.awt.*;
 
 /**
@@ -11,6 +14,7 @@ public class LayerGame extends Layer {
     // 用于 shadow 的两个常量
     private static final int LEFT_SIDE = 0;
     private static final int RIGHT_SIDE = 9;
+    private final int LOSE_IDX = GameConfig.getFrameConfig().getLoseIdx();
 
     public LayerGame(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -18,34 +22,17 @@ public class LayerGame extends Layer {
 
     public void paint(Graphics g) {
         this.createWindow(g);
-        // 获得方块组合的集合
-        // dto 继承自 Layer
-        Point[] points = this.dto.getGameAct().getActPoint();
-        // 方块类型编号 1-6
-        int type_code = this.dto.getGameAct().getType_code();
-        // shadow
-        this.drawShadow(true, points, g);
 
+        if (this.dto.isStart() != false) {
+            // 获得方块组合的集合
+            // dto 继承自 Layer
+            Point[] points = this.dto.getGameAct().getActPoint();
 
-        // 打印方块
-        for (int i = 0; i < points.length; i++) {
-            drawBrick(points[i].x, points[i].y, type_code + 1, g);
+            // 绘制活动方块
+            this.drawMainAct(g,points);
         }
-        // 打印地图
-        boolean[][] map = this.dto.getGameMap();
-        // 计算当前堆积的颜色
-
-        int lv = this.dto.getLevel();
-        //  根据等级，改编堆积颜色
-        int imgIdx = lv == 0 ? 0 : (lv - 1) % 7 + 1;
-        // todo if lose imgIdx = 8;
-        for (int x = 0; x < map.length; x++) {
-            for (int y = 0; y < map[x].length; y++) {
-                if (map[x][y]) { // 如果是 true 就打印一个堆积
-                    drawBrick(x, y, imgIdx, g);
-                }
-            }
-        }
+        // 绘制地图
+        this.drawMap(g);
     }
 
     /**
@@ -92,5 +79,35 @@ public class LayerGame extends Layer {
                 (shadow_right_X - shadow_left_X + 1) * ACT_SIZE,
                 this.height - WINDOW_SIZE * 2, null);
 
+    }
+
+    private void drawMainAct(Graphics g, Point[] points) {
+        // 方块类型编号 1-6
+        int type_code = this.dto.getGameAct().getType_code();
+        // shadow
+        this.drawShadow(true, points, g);
+
+        // 打印方块
+        for (int i = 0; i < points.length; i++) {
+            drawBrick(points[i].x, points[i].y, type_code + 1, g);
+        }
+    }
+
+    private void drawMap(Graphics g) {
+        // 打印地图
+        boolean[][] map = this.dto.getGameMap();
+        // 计算当前堆积的颜色
+
+        int lv = this.dto.getLevel();
+        //  根据等级，改编堆积颜色
+        int imgIdx = lv == 0 ? 0 : (lv - 1) % 7 + 1;
+
+        for (int x = 0; x < map.length; x++) {
+            for (int y = 0; y < map[x].length; y++) {
+                if (map[x][y]) { // 如果是 true 就打印一个堆积
+                    drawBrick(x, y, this.dto.isStart() ? imgIdx : LOSE_IDX, g);
+                }
+            }
+        }
     }
 }

@@ -32,6 +32,8 @@ public class GameDto {
     private int realtimeRemoveLine;
     private Random random = new Random();
 
+    private boolean startCode = false;
+
     public GameDto() {
         dtoInit();
 //        for (int x = 0; x < 10; x++) {
@@ -128,4 +130,11 @@ public class GameDto {
         return players;
     }
 
+    public boolean isStart() {
+        return startCode;
+    }
+
+    public void setStart(boolean start) {
+        startCode = start;
+    }
 }

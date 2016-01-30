@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <game>
     <frame title = "俄罗斯方块" width="1162" height="676" padding="16" windowSize = "7" loseIdx = "8">
+        <button w = "105" h = "40">
+            <start x = "820" y="74"/>
+            <setting x = "965" y="74"/>
+        </button>
         <layer className = "ui.LayerBackground" x="0"   y="0"   layer_width="0"   layer_height="0"/>
         <layer className = "ui.LayerDataBase"   x="40"  y="32"  layer_width="334" layer_height="279"/>
         <layer className = "ui.LayerGame"       x="414" y="32"  layer_width="334" layer_height="590"/>

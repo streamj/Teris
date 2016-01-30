@@ -25,6 +25,10 @@ public class Img {
 
     public static Image DISK = new ImageIcon("graphic/string/disk.png").getImage();
 
+    public static ImageIcon START_BUTTON = new ImageIcon("graphic/string/start.png");
+
+    public static ImageIcon CONFIG_BUTTON = new ImageIcon("graphic/string/config.png");
+
 
     public static  Image[] NEXT_BRICK;
 

@@ -110,4 +110,13 @@ public class GameControl {
 
         this.panelGame.repaint();
     }
+
+    /**
+     * 开始按钮的一系列方法
+     */
+    public void start() {
+        this.panelGame.buttonStatus(false);
+        this.gameService.startMainThread();
+        this.panelGame.repaint();
+    }
 }

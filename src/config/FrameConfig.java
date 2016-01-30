@@ -16,7 +16,9 @@ public class FrameConfig {
     private final int padding;
     private final String title;
     private final int loseIdx;
-    private List<LayerConfig> layersConfig;
+    private final List<LayerConfig> layersConfig;
+
+    private final ButtonConfig buttonConfig;
 
     public FrameConfig(Element frame) {
 
@@ -42,6 +44,8 @@ public class FrameConfig {
 
             layersConfig.add(lc);
         }
+
+        buttonConfig = new ButtonConfig(frame.element("button"));
     }
 
 
@@ -71,5 +75,9 @@ public class FrameConfig {
 
     public int getLoseIdx() {
         return loseIdx;
+    }
+
+    public ButtonConfig getButtonConfig() {
+        return buttonConfig;
     }
 }

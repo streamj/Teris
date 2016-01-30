@@ -4,11 +4,14 @@ import config.FrameConfig;
 import config.GameConfig;
 import config.LayerConfig;
 
+import control.GameControl;
 import control.PlayerControl;
 import dto.GameDto;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +25,25 @@ public class PanelGame extends JPanel{
      */
     private List<Layer> layers = null;
     private GameDto dto = null;
+    // get method hell...
+    private  static final int BTN_SIZE_WIDTH = GameConfig.getFrameConfig().getButtonConfig().getButtonWidth();
+    private  static final int BTN_SIZE_Height = GameConfig.getFrameConfig().getButtonConfig().getButtonHeight();
 
+    private JButton startButton;
+
+    private JButton settingButton;
+
+    private GameControl gameControl = null;
     /**
      * 默认构造函数，给他传个dto
      * @param dto
      */
     public PanelGame(GameDto dto) {
         this.dto = dto;
+        //设为自由布局
+        this.setLayout(null);
         // 初始化组件
-//        initComponent();
+        initComponent();
         // 初始化层
         initLayer();
     }
@@ -39,13 +52,36 @@ public class PanelGame extends JPanel{
      * 安装玩家控制器
      * @param playerControl
      */
-    public void setGameControl(PlayerControl playerControl) {
+    public void setPlayerControl(PlayerControl playerControl) {
         this.addKeyListener(playerControl);
     }
 
+    public void setGameControl(GameControl gameControl) {
+        this.gameControl = gameControl;
+    }
 
     private void initComponent() {
-
+        this.startButton = new JButton(Img.START_BUTTON);
+        startButton.setBounds(
+                GameConfig.getFrameConfig().getButtonConfig().getStartX(),
+                GameConfig.getFrameConfig().getButtonConfig().getStartY(),
+                BTN_SIZE_WIDTH, BTN_SIZE_Height
+        );
+        // 给开始按钮增加事件监听
+        this.startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameControl.start();
+            }
+        });
+        this.add(startButton); // 添加按钮到面板
+        this.settingButton = new JButton(Img.CONFIG_BUTTON);
+        settingButton.setBounds(
+                GameConfig.getFrameConfig().getButtonConfig().getSettingX(),
+                GameConfig.getFrameConfig().getButtonConfig().getSettingY(),
+                BTN_SIZE_WIDTH, BTN_SIZE_Height
+        );
+        this.add(settingButton); // 同上
     }
 
     /**
@@ -80,6 +116,15 @@ public class PanelGame extends JPanel{
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 控制按钮状态
+     * @param isClicked
+     */
+    public void buttonStatus(boolean isClicked) {
+        this.startButton.setEnabled(isClicked);
+        this.settingButton.setEnabled(isClicked);
     }
 
     /**

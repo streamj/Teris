@@ -17,7 +17,7 @@ public class GameService {
 
     private Random random = new Random(); // 这个又没初始化
 
-    private static final int MAX_TYPE_CODE = 6;
+    private static final int MAX_TYPE_CODE = GameConfig.getSystemConfig().getBrick_type().size()-1;
 
     /**
      * 升级需要的消除的行数
@@ -33,10 +33,15 @@ public class GameService {
 
     public GameService(GameDto dto) {
         this.dto = dto;
-        // init a random brick shape
-        GameAct act = new GameAct(random.nextInt(MAX_TYPE_CODE));
 
-        dto.setGameAct(act);
+    }
+
+    public void startMainThread() {
+        // random generate a next shape
+        this.dto.setNext_brick(random.nextInt(MAX_TYPE_CODE));
+        // generate  a random brick shape
+        this.dto.setGameAct(new GameAct(random.nextInt(MAX_TYPE_CODE)));
+        this.dto.setStart(true);
     }
 
     /**
@@ -74,11 +79,7 @@ public class GameService {
         for (int i = 0; i < act.length; i++) {
             map[act[i].x][act[i].y] = true;
         }
-        // TODO 判断是否可以消行
-        // TODO 算分
-        // TODO 消行
-        // TODO 是否升级
-        // TODO level up
+
         int exp = this.growExp();
         if(exp > 0) {
             this.growScore(exp);
@@ -95,7 +96,21 @@ public class GameService {
         this.dto.setNext_brick(random.nextInt(MAX_TYPE_CODE));
 
         //System.out.println(random.nextInt(MAX_TYPE_CODE));
+
+        // 检查游戏地图是否和新生成的方块有重合，重合即失败
+        // 获得当前方块坐标
+        Point[] actPoints = this.dto.getGameAct().getActPoint();
+        // 获得地图坐标
+//        boolean[][] map = this.dto.getGameMap();
+
+        for(int i = 0; i < actPoints.length; i++) {
+            if (map[actPoints[i].x][actPoints[i].y]) {
+                this.gameOver();
+            }
+        }
+
     }
+
 
     public void left() {
         this.dto.getGameAct().move(-1, 0, this.dto.getGameMap());
@@ -121,6 +136,12 @@ public class GameService {
         this.dto.setRealtimeScore(score);
         this.dto.setLevel(lv);
         this.dto.setRealtimeRemoveLine(rmvLine);
+    }
+
+
+    public void gameOver(){
+        this.dto.setStart(false);
+            // TODO close game main thread
     }
 
     //

@@ -14,8 +14,10 @@ public class LayerNext extends Layer {
 
     public void paint(Graphics g) {
         this.createWindow(g);
-        this.centerDrawImage(Img.NEXT_BRICK[this.dto.getNext_brick()], g);
-
+        // 如果是开始状态才绘制下一个方块
+        if (this.dto.isStart()) {
+            this.centerDrawImage(Img.NEXT_BRICK[this.dto.getNext_brick()], g);
+        }
     }
 
 

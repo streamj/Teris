@@ -39,17 +39,22 @@ public class main {
         GameControl gameControl = new GameControl(panelGame, gameService);
 
         /**
+         * 将游戏控制器对象交给 panelGame
+         */
+        panelGame.setGameControl(gameControl);
+        /**
          * 创建玩家控制器(连接游戏控制器)
          * 这个很简单，就是一个监听键盘事件, 而且只接受上下左右
          * 监听到了之后，他什么也不做，只是调用 gameControl
          */
+
         PlayerControl playerControl = new PlayerControl(gameControl);
 
         /**
          * 安装玩家控制器
          * 这个时候，又绕回到了 panelGame, 他要一个玩家控制器
          */
-        panelGame.setGameControl(playerControl);
+        panelGame.setPlayerControl(playerControl);
 
         /**
          * 生成一个 frameGame 也就是游戏主窗口，稍微读一下配置，设置一下参数
