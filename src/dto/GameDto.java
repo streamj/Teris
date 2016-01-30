@@ -9,8 +9,6 @@ import java.util.Random;
 
 /**
  * 游戏数据源的类，封装了所有数据
- * 但是非常奇葩的是，只初始化了一个成员，那么按照 JAVA 规则，会把数值都设置0，布尔值设置 false，对象引用设置 null
- * 只有缺少程序设计经验的人才会这么做..
  *
  * Created by StReaM on 11/29/2015.
  */
@@ -34,10 +32,6 @@ public class GameDto {
     private int realtimeRemoveLine;
     private Random random = new Random();
 
-    /**
-     * 何等奇葩的构造函数，只初始化了一个 gameMap
-     * 一开始全部是 false
-     */
     public GameDto() {
         dtoInit();
 //        for (int x = 0; x < 10; x++) {

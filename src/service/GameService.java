@@ -148,17 +148,6 @@ public class GameService {
         return true;
     }
 
-//    private void removeLine(boolean[][] map, int line) {
-//        for (int y = line; y > 0; y-- ) {
-//            for (int x = 0; x < 10; x++) {
-//                map[x][y] = map[x][y-1];
-//            }
-//        }
-//
-//        for (int x = 0; x < 10; x++) {
-//            map[x][0] = false;
-//        }
-//    }
 
     /**
      * 消行函数，我不知道和我写的有啥区别
@@ -179,11 +168,7 @@ public class GameService {
     private int growExp() {
         boolean[][] after_map = this.dto.getGameMap();
 
-//        for (int y = 17; y >=0; y--) {
-//            if (canRemoveLine(after_map,y)) {
-//                removeLine(after_map, y);
-//            }
-//        }
+
         int exp = 0;
         for (int y = 0; y < 18; y++) {
             if (canRemoveLine(after_map, y)) {
