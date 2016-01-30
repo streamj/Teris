@@ -128,8 +128,6 @@ public class PanelGame extends JPanel{
     }
 
     /**
-     * 这个方法，在哪里被调用？
-     * 推测 JFrame 会调用这个方法
      * @param g
      */
     @Override
