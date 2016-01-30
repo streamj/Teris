@@ -150,7 +150,7 @@ public class GameService {
 
 
     /**
-     * 消行函数，我不知道和我写的有啥区别
+     * 消行函数
      *
      * @param map
      * @param line
