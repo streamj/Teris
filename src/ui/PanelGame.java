@@ -24,7 +24,7 @@ public class PanelGame extends JPanel{
      * 图层列表，一系列 Layer 的派生类
      */
     private List<Layer> layers = null;
-    private GameDto dto = null;
+
     // get method hell...
     private  static final int BTN_SIZE_WIDTH = GameConfig.getFrameConfig().getButtonConfig().getButtonWidth();
     private  static final int BTN_SIZE_Height = GameConfig.getFrameConfig().getButtonConfig().getButtonHeight();
@@ -34,31 +34,20 @@ public class PanelGame extends JPanel{
     private JButton settingButton;
 
     private GameControl gameControl = null;
-    /**
-     * 默认构造函数，给他传个dto
-     * @param dto
-     */
-    public PanelGame(GameDto dto) {
-        this.dto = dto;
+
+    public PanelGame(GameDto dto, GameControl gameControl) {
+        this.gameControl = gameControl;
+
         //设为自由布局
         this.setLayout(null);
         // 初始化组件
-        initComponent();
+        this.initComponent();
         // 初始化层
-        initLayer();
+        this.initLayer(dto);
+        this.addKeyListener(new PlayerControl(gameControl));
     }
 
-    /**
-     * 安装玩家控制器
-     * @param playerControl
-     */
-    public void setPlayerControl(PlayerControl playerControl) {
-        this.addKeyListener(playerControl);
-    }
 
-    public void setGameControl(GameControl gameControl) {
-        this.gameControl = gameControl;
-    }
 
     private void initComponent() {
         this.startButton = new JButton(Img.START_BUTTON);
@@ -87,7 +76,7 @@ public class PanelGame extends JPanel{
     /**
      * 逐个初始化图层
      */
-    private void initLayer() {
+    private void initLayer(GameDto dto) {
         try {
             // 获得配置文件
             FrameConfig fCfg = GameConfig.getFrameConfig();
@@ -108,7 +97,7 @@ public class PanelGame extends JPanel{
                         layercfg.getLayer_height()
                 );
                 // set game data object
-                layer.setDto(this.dto);
+                layer.setDto(dto);
                 layers.add(layer);
 
             }

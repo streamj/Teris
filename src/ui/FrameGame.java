@@ -2,7 +2,6 @@ package ui;
 
 import config.FrameConfig;
 import config.GameConfig;
-import util.FrameUtil;
 
 import javax.swing.JFrame;
 

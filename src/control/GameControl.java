@@ -4,7 +4,9 @@ import config.DataInterfaceConfig;
 import config.GameConfig;
 import dao.Data;
 
+import dto.GameDto;
 import service.GameService;
+import ui.FrameGame;
 import ui.PanelGame;
 
 import java.lang.reflect.Constructor;
@@ -29,6 +31,12 @@ public class GameControl {
 
     private Map<Integer, Method> action;
 
+    private Thread gameThread = null;
+
+    private GameDto dto = null;
+
+
+
     /**
      * 数据访问接口 A B
      */
@@ -36,12 +44,38 @@ public class GameControl {
     private Data dataB;
 
 
-    public GameControl(PanelGame panelGame, GameService gameService) {
-        this.panelGame = panelGame;
-        this.gameService = gameService;
+    public GameControl() {
+
+        /**
+         * 生成一个数据源，这个数据源将会不断往下传输
+         */
+        this.dto = new GameDto();
+
+        /**
+         * 创建游戏服务
+         */
+        this.gameService = new GameService(dto);
+
+        // 从数据库接口获得数据库记录
+        DataInterfaceConfig data_cfg_a = GameConfig.getDataConfig().getDataA();
+        DataInterfaceConfig data_cfg_b = GameConfig.getDataConfig().getDataA();
+
+        this.dataA = createDataObject(data_cfg_a);
+
+        // 从磁盘接口获得磁盘记录
+        this.dataB = createDataObject(data_cfg_b); // should be disk
+        this.dto.setDbRecord(dataA.loadData());
+        this.dto.setDiskRecord(dataB.loadData());
+
+        /**
+         * 创建游戏面板
+         * 如果 dto 产生变化，他就会根据 dto 重绘
+         */
+        this.panelGame = new PanelGame(dto, this);
 
         action = new HashMap<Integer,Method>();
         try {
+            action.put(27,this.gameService.getClass().getMethod("esc"));
             action.put(37,this.gameService.getClass().getMethod("left"));
             action.put(38,this.gameService.getClass().getMethod("up"));
             action.put(39,this.gameService.getClass().getMethod("right"));
@@ -50,15 +84,13 @@ public class GameControl {
             e.printStackTrace();
         }
 
-        // 从数据库接口获得数据库记录
-        DataInterfaceConfig data_cfg_a = GameConfig.getDataConfig().getDataA();
-        DataInterfaceConfig data_cfg_b = GameConfig.getDataConfig().getDataA();
+        /**
+         * 生成一个 frameGame 也就是游戏主窗口，稍微读一下配置，设置一下参数
+         * 然后把 panelGame 传给 frameGame 就开始画图 生成游戏并且监听键盘行为
+         * 之后除了退出之外的大部分玩家行为都会传给 playerControl
+         */
+        FrameGame frameGame = new FrameGame(panelGame);
 
-        this.dataA = createDataObject(data_cfg_a);
-        // 从磁盘接口获得磁盘记录
-        this.dataB = createDataObject(data_cfg_b); // should be disk
-        this.gameService.setRecordDataBase(dataA.loadData());
-        this.gameService.setRecordDisk(dataB.loadData());
     }
 
     private Data createDataObject(DataInterfaceConfig data_cfg) {
@@ -74,30 +106,9 @@ public class GameControl {
         }
     }
 
-    /**
-     * 每动一步，panelGame 都会 repaint
-     */
-//    public void up() {
-//        this.gameService.up();
-//        this.panelGame.repaint();
-//    }
-//
-//    public void down() {
-//        this.gameService.down();
-//        this.panelGame.repaint();
-//    }
-//
-//    public void left() {
-//        this.gameService.left();
-//        this.panelGame.repaint();
-//    }
-//
-//    public void right() {
-//        this.gameService.right();
-//        this.panelGame.repaint();
-//    }
 
     public void actionByKeyCode(int keyCode) {
+
         try {
             if (!this.action.containsKey(keyCode)) {
                 return;
@@ -116,7 +127,41 @@ public class GameControl {
      */
     public void start() {
         this.panelGame.buttonStatus(false);
-        this.gameService.startMainThread();
+        this.gameService.startGame();
+
+        // create thread
+        this.gameThread = new MainThread();
+        this.gameThread.start();
         this.panelGame.repaint();
     }
+
+    public void afterGameOver(){
+
+    }
+
+    private class MainThread extends Thread {
+        // 内部类
+        @Override
+        public void run() {
+            while (true) {
+                if (!dto.isStart()) {
+                    break;
+                }
+
+                try {
+                    Thread.sleep(500); // sleep first
+
+                    if (dto.isPause()) {
+                        continue;
+                    }
+                    gameService.mainAction();
+                    panelGame.repaint();
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }

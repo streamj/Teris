@@ -29,6 +29,8 @@ public class Img {
 
     public static ImageIcon CONFIG_BUTTON = new ImageIcon("graphic/string/config.png");
 
+    public static Image PAUSE = new ImageIcon("graphic/string/pause.png").getImage();
+
 
     public static  Image[] NEXT_BRICK;
 

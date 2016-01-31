@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <game>
-    <frame title = "俄罗斯方块" width="1162" height="676" padding="16" windowSize = "7" loseIdx = "8">
+    <frame title = "俄罗斯方块 Press ESC to Pause" width="1162" height="676" padding="16" windowSize = "7" loseIdx = "8">
         <button w = "105" h = "40">
             <start x = "820" y="74"/>
             <setting x = "965" y="74"/>

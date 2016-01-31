@@ -23,16 +23,21 @@ public class LayerGame extends Layer {
     public void paint(Graphics g) {
         this.createWindow(g);
 
-        if (this.dto.isStart() != false) {
+        GameAct act = this.dto.getGameAct();
+        if (act != null) {
             // 获得方块组合的集合
             // dto 继承自 Layer
             Point[] points = this.dto.getGameAct().getActPoint();
-
             // 绘制活动方块
             this.drawMainAct(g,points);
         }
+
         // 绘制地图
         this.drawMap(g);
+        // pause game
+        if(this.dto.isPause()) {
+            this.centerDrawImage(Img.PAUSE,g);
+        }
     }
 
     /**
@@ -44,6 +49,8 @@ public class LayerGame extends Layer {
      * @param g
      */
     private void drawBrick(int x, int y, int imgIdx, Graphics g) {
+        imgIdx = this.dto.isStart() ? imgIdx : LOSE_IDX;
+
         g.drawImage(Img.ACT,
                 // this 代表这个 Layer
                 // thjs.x 代表窗口左上角坐标
@@ -84,12 +91,13 @@ public class LayerGame extends Layer {
     private void drawMainAct(Graphics g, Point[] points) {
         // 方块类型编号 1-6
         int type_code = this.dto.getGameAct().getType_code();
+
         // shadow
         this.drawShadow(true, points, g);
 
         // 打印方块
         for (int i = 0; i < points.length; i++) {
-            drawBrick(points[i].x, points[i].y, type_code + 1, g);
+            this.drawBrick(points[i].x, points[i].y, type_code + 1, g);
         }
     }
 
@@ -105,7 +113,7 @@ public class LayerGame extends Layer {
         for (int x = 0; x < map.length; x++) {
             for (int y = 0; y < map[x].length; y++) {
                 if (map[x][y]) { // 如果是 true 就打印一个堆积
-                    drawBrick(x, y, this.dto.isStart() ? imgIdx : LOSE_IDX, g);
+                    this.drawBrick(x, y,imgIdx, g);
                 }
             }
         }

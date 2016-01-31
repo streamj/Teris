@@ -2,7 +2,6 @@ package service;
 
 import config.GameConfig;
 import dto.GameDto;
-import dto.Player;
 import entity.GameAct;
 
 import java.awt.*;
@@ -36,7 +35,7 @@ public class GameService {
 
     }
 
-    public void startMainThread() {
+    public void startGame() {
         // random generate a next shape
         this.dto.setNext_brick(random.nextInt(MAX_TYPE_CODE));
         // generate  a random brick shape
@@ -44,6 +43,9 @@ public class GameService {
         this.dto.setStart(true);
     }
 
+    public void mainAction() {
+        this.down();
+    }
     /**
      * 旋转90度，笛卡尔坐标系，和屏幕坐标系相反，因为一个（0,0）在左上角，一个在左下角
      * 假设 O 中心，A after B before
@@ -56,56 +58,75 @@ public class GameService {
      * A (4,2) B(3,-1) O(2,1)
      */
 
+
+    // press esc to pause
+    public void esc() {
+        if (this.dto.isStart()) {
+            this.dto.switchPause();
+        }
+    }
+
     public void up() {
-        this.dto.getGameAct().spin(this.dto.getGameMap());
+        if (this.dto.isPause()) {
+            return;
+        }
+        // 注意线程安全
+        synchronized (this.dto) {
+            this.dto.getGameAct().spin(this.dto.getGameMap());
+        }
 
     }
 
     public void down() {
-        // 需要判断是否下降成功, 能下降，就仅仅做一下下降，然后完事了
-        boolean canDown = this.dto.getGameAct().move(0, 1, this.dto.getGameMap());
-        if (canDown) {
+        if (this.dto.isPause()) {
             return;
         }
-        // 如果不能再向下, 就开始堆积
-        // 首先从 dto 取得 gameMap
-        boolean[][] map = this.dto.getGameMap();
+        synchronized (this.dto) {
+            // 需要判断是否下降成功, 能下降，就仅仅做一下下降，然后完事了
+            boolean canDown = this.dto.getGameAct().move(0, 1, this.dto.getGameMap());
+            if (canDown) {
+                return;
+            }
+            // 如果不能再向下, 就开始堆积
+            // 首先从 dto 取得 gameMap
+            boolean[][] map = this.dto.getGameMap();
 
-        // 其次从 dto 取得当前方块的坐标
-        // 每个数组元素都是 (x,y)
-        Point[] act = this.dto.getGameAct().getActPoint();
+            // 其次从 dto 取得当前方块的坐标
+            // 每个数组元素都是 (x,y)
+            Point[] act = this.dto.getGameAct().getActPoint();
 
-        // 将这几个坐标都设置为 true 表示堆积
-        for (int i = 0; i < act.length; i++) {
-            map[act[i].x][act[i].y] = true;
-        }
+            // 将这几个坐标都设置为 true 表示堆积
+            for (int i = 0; i < act.length; i++) {
+                map[act[i].x][act[i].y] = true;
+            }
 
-        int exp = this.growExp();
-        if(exp > 0) {
-            this.growScore(exp);
-        }
-
-
-        // generate another brick shape
-        // 从 dto 里获得 gameAct 对象, 然后这个对象重新初始化一个方块
-        this.dto.getGameAct().init(this.dto.getNext_brick());
+            int exp = this.growExp();
+            if (exp > 0) {
+                this.growScore(exp);
+            }
 
 
-        //System.out.println(this.dto.getNext_brick());
-        // 随机生成下方块的 type_code
-        this.dto.setNext_brick(random.nextInt(MAX_TYPE_CODE));
+            // generate another brick shape
+            // 从 dto 里获得 gameAct 对象, 然后这个对象重新初始化一个方块
+            this.dto.getGameAct().init(this.dto.getNext_brick());
 
-        //System.out.println(random.nextInt(MAX_TYPE_CODE));
 
-        // 检查游戏地图是否和新生成的方块有重合，重合即失败
-        // 获得当前方块坐标
-        Point[] actPoints = this.dto.getGameAct().getActPoint();
-        // 获得地图坐标
+            //System.out.println(this.dto.getNext_brick());
+            // 随机生成下方块的 type_code
+            this.dto.setNext_brick(random.nextInt(MAX_TYPE_CODE));
+
+            //System.out.println(random.nextInt(MAX_TYPE_CODE));
+
+            // 检查游戏地图是否和新生成的方块有重合，重合即失败
+            // 获得当前方块坐标
+            Point[] actPoints = this.dto.getGameAct().getActPoint();
+            // 获得地图坐标
 //        boolean[][] map = this.dto.getGameMap();
 
-        for(int i = 0; i < actPoints.length; i++) {
-            if (map[actPoints[i].x][actPoints[i].y]) {
-                this.gameOver();
+            for (int i = 0; i < actPoints.length; i++) {
+                if (map[actPoints[i].x][actPoints[i].y]) {
+                    this.gameOver();
+                }
             }
         }
 
@@ -113,30 +134,25 @@ public class GameService {
 
 
     public void left() {
-        this.dto.getGameAct().move(-1, 0, this.dto.getGameMap());
 
+        if (this.dto.isPause()) {
+            return;
+        }
+        synchronized (this.dto) {
+            this.dto.getGameAct().move(-1, 0, this.dto.getGameMap());
+        }
     }
 
     public void right() {
-        this.dto.getGameAct().move(1, 0, this.dto.getGameMap());
-
-    }
-
-    //
-    public void testLevelUp() {
-        int score = this.dto.getRealtimeScore();
-        int rmvLine = this.dto.getRealtimeRemoveLine();
-        int lv = this.dto.getLevel();
-        score += 10;
-        rmvLine += 1;
-        if (rmvLine % 20 == 0) {
-            lv += 1;
+        if (this.dto.isPause()) {
+            return;
         }
 
-        this.dto.setRealtimeScore(score);
-        this.dto.setLevel(lv);
-        this.dto.setRealtimeRemoveLine(rmvLine);
+        synchronized (this.dto) {
+            this.dto.getGameAct().move(1, 0, this.dto.getGameMap());
+        }
     }
+
 
 
     public void gameOver(){
@@ -144,14 +160,6 @@ public class GameService {
             // TODO close game main thread
     }
 
-    //
-    public void setRecordDataBase(java.util.List<Player> players) {
-        this.dto.setDbRecord(players);
-    }
-
-    public void setRecordDisk(java.util.List<Player> players) {
-        this.dto.setDiskRecord(players);
-    }
 
     /**
      * 判断是否可以消行

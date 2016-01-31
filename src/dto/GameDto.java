@@ -14,6 +14,7 @@ import java.util.Random;
  */
 public class GameDto {
 
+    private boolean pause = false;
     private static final int  MAX_TYPE_CODE = 6;
 
     private List<Player> dbRecord;
@@ -36,12 +37,8 @@ public class GameDto {
 
     public GameDto() {
         dtoInit();
-//        for (int x = 0; x < 10; x++) {
-//            for (int y = 0; y < 18; y++) {
-//                System.out.println(gameMap[x][y]);
-//            }
-//        }
-        System.out.println(next_brick);
+
+//        System.out.println(next_brick);
     }
 
     public void dtoInit() {
@@ -136,5 +133,13 @@ public class GameDto {
 
     public void setStart(boolean start) {
         startCode = start;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void switchPause() {
+        this.pause = !this.pause;
     }
 }
