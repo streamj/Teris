@@ -1,6 +1,7 @@
 package dto;
 
 import entity.GameAct;
+import service.ThreadFunction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,7 @@ public class GameDto {
     private int level;
     private int realtimeScore;
     private int realtimeRemoveLine;
+    private long sleepTime; // for thread sleep
     private Random random = new Random();
 
     private boolean startCode = false;
@@ -44,6 +46,9 @@ public class GameDto {
     public void dtoInit() {
         this.gameMap = new boolean[10][18];
         next_brick = random.nextInt(MAX_TYPE_CODE);
+        this.realtimeScore = 0;
+        this.level = 0;
+        this.realtimeRemoveLine = 0;
     }
 
     public List<Player> getDbRecord() {
@@ -102,6 +107,7 @@ public class GameDto {
 
     public void setLevel(int level) {
         this.level = level;
+        this.sleepTime = ThreadFunction.getSleepTimeByLevel(this.level);
     }
 
     public void setRealtimeScore(int realtimeScore) {
@@ -141,5 +147,13 @@ public class GameDto {
 
     public void switchPause() {
         this.pause = !this.pause;
+    }
+
+    public long getSleepTime() {
+        return sleepTime;
+    }
+
+    public void setSleepTime(long sleepTime) {
+        this.sleepTime = sleepTime;
     }
 }

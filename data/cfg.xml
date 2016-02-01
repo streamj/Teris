@@ -37,10 +37,10 @@
         <rect>
             <point x ="4" y = "0"/><point x="3" y="0"/><point x="4" y="1"/><point x="5" y="1"/>
         </rect>
-        <plusPoint rm = "1" point = "10"/>
-        <plusPoint rm = "2" point = "15"/>
-        <plusPoint rm = "3" point = "20"/>
-        <plusPoint rm = "4" point = "30"/>
+        <plusPoint rm = "1" point = "100"/>
+        <plusPoint rm = "2" point = "150"/>
+        <plusPoint rm = "3" point = "200"/>
+        <plusPoint rm = "4" point = "300"/>
     </system>
     <data maxRow = "5">
         <dataA className="dao.Database">

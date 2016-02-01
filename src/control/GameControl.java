@@ -5,9 +5,11 @@ import config.GameConfig;
 import dao.Data;
 
 import dto.GameDto;
+import dto.Player;
 import service.GameService;
 import ui.FrameGame;
 import ui.PanelGame;
+import ui.LayerSaveScore;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -23,11 +25,13 @@ public class GameControl {
      * 游戏界面层
      * 主要就是为了调用 repaint 刷新游戏
      */
-    private PanelGame panelGame;
+    private PanelGame panelGame = null;
     /**
      * 游戏逻辑层
      */
-    private GameService gameService;
+    private GameService gameService = null;
+
+    private LayerSaveScore layerSaveScore = null;
 
     private Map<Integer, Method> action;
 
@@ -40,8 +44,8 @@ public class GameControl {
     /**
      * 数据访问接口 A B
      */
-    private Data dataA;
-    private Data dataB;
+    private Data dataA; // for database
+    private Data dataB; // for local disk
 
 
     public GameControl() {
@@ -64,6 +68,7 @@ public class GameControl {
 
         // 从磁盘接口获得磁盘记录
         this.dataB = createDataObject(data_cfg_b); // should be disk
+
         this.dto.setDbRecord(dataA.loadData());
         this.dto.setDiskRecord(dataB.loadData());
 
@@ -83,6 +88,8 @@ public class GameControl {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        this.layerSaveScore = new LayerSaveScore(this);
 
         /**
          * 生成一个 frameGame 也就是游戏主窗口，稍微读一下配置，设置一下参数
@@ -128,6 +135,8 @@ public class GameControl {
     public void start() {
         this.panelGame.buttonStatus(false);
         this.gameService.startGame();
+        // close layer to avoid errors
+        this.layerSaveScore.setVisible(false);
 
         // create thread
         this.gameThread = new MainThread();
@@ -136,6 +145,8 @@ public class GameControl {
     }
 
     public void afterGameOver(){
+        this.layerSaveScore.showScore(this.dto.getRealtimeScore());
+        this.panelGame.buttonStatus(true);
 
     }
 
@@ -143,13 +154,9 @@ public class GameControl {
         // 内部类
         @Override
         public void run() {
-            while (true) {
-                if (!dto.isStart()) {
-                    break;
-                }
-
+            while (dto.isStart()) {
                 try {
-                    Thread.sleep(500); // sleep first
+                    Thread.sleep(dto.getSleepTime()); // sleep first
 
                     if (dto.isPause()) {
                         continue;
@@ -161,7 +168,17 @@ public class GameControl {
                     e.printStackTrace();
                 }
             }
+            afterGameOver();
         }
+    }
+
+    public void saveScore(String name){
+        Player player = new Player(name, this.dto.getRealtimeScore());
+        this.dataA.saveData(player);
+        this.dataB.saveData(player);
+        this.dto.setDbRecord(dataA.loadData());
+        this.dto.setDiskRecord(dataB.loadData());
+        this.panelGame.repaint();
     }
 
 }

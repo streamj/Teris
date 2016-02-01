@@ -13,7 +13,6 @@ public interface Data {
     /**
      * 获得数据
      * @return
-     *
      */
     List<Player> loadData();
 

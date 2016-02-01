@@ -41,6 +41,7 @@ public class GameService {
         // generate  a random brick shape
         this.dto.setGameAct(new GameAct(random.nextInt(MAX_TYPE_CODE)));
         this.dto.setStart(true);
+        this.dto.dtoInit();
     }
 
     public void mainAction() {
@@ -157,6 +158,7 @@ public class GameService {
 
     public void gameOver(){
         this.dto.setStart(false);
+
             // TODO close game main thread
     }
 

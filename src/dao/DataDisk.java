@@ -3,7 +3,6 @@ package dao;
 import dto.Player;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,22 +64,5 @@ public class DataDisk implements Data {
             }
         }
     }
-
-//   public static void main(String [] args) throws Exception {
-//       DataDisk dd = new DataDisk();
-//       List<Player> players = new ArrayList<>();
-//       players.add(new Player("Nao", 1100));
-//       players.add(new Player("Ai",  1200));
-//       players.add(new Player("Jan", 1300));
-//       players.add(new Player("Nao", 1400));
-//       players.add(new Player("Nao", 1500));
-//
-//       dd.saveData(players);
-//
-//       List<Player> dataFromDisk = dd.loadData();
-//       for (Player p : dataFromDisk) {
-//           System.out.println(p.getName() + '\t' + p.getScore());
-//       }
-//   }
 
 }
