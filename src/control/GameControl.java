@@ -89,8 +89,8 @@ public class GameControl {
             e.printStackTrace();
         }
 
-        this.layerSaveScore = new LayerSaveScore(this);
 
+        this.layerSaveScore = new LayerSaveScore(this);
         /**
          * 生成一个 frameGame 也就是游戏主窗口，稍微读一下配置，设置一下参数
          * 然后把 panelGame 传给 frameGame 就开始画图 生成游戏并且监听键盘行为
@@ -134,10 +134,10 @@ public class GameControl {
      */
     public void start() {
         this.panelGame.buttonStatus(false);
-        this.gameService.startGame();
         // close layer to avoid errors
         this.layerSaveScore.setVisible(false);
 
+        this.gameService.startGame();
         // create thread
         this.gameThread = new MainThread();
         this.gameThread.start();
@@ -154,6 +154,8 @@ public class GameControl {
         // 内部类
         @Override
         public void run() {
+            panelGame.repaint();
+
             while (dto.isStart()) {
                 try {
                     Thread.sleep(dto.getSleepTime()); // sleep first

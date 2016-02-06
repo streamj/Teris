@@ -159,7 +159,7 @@ public class GameService {
     public void gameOver(){
         this.dto.setStart(false);
 
-            // TODO close game main thread
+        // TODO close game main thread
     }
 
 

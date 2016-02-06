@@ -27,9 +27,7 @@ public class LayerSaveScore extends JFrame{
         this.setLayout(new BorderLayout());
         this.createButton();
         this.createAction();
-        // test
-//        this.setDefaultCloseOperation(3);
-//        this.setVisible(true);
+
     }
 
 

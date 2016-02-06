@@ -32,7 +32,9 @@ public class GameDto {
     private int level;
     private int realtimeScore;
     private int realtimeRemoveLine;
+
     private long sleepTime; // for thread sleep
+
     private Random random = new Random();
 
     private boolean startCode = false;
@@ -49,6 +51,8 @@ public class GameDto {
         this.realtimeScore = 0;
         this.level = 0;
         this.realtimeRemoveLine = 0;
+        this.pause =false;
+        this.sleepTime = ThreadFunction.getSleepTimeByLevel(this.level); // if not initialize will cause bug
     }
 
     public List<Player> getDbRecord() {
