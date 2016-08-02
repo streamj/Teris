@@ -64,7 +64,6 @@ public class LayerGame extends Layer {
     }
 
     /**
-     * 不理解...
      * @param b
      * @param points
      */
@@ -72,9 +71,6 @@ public class LayerGame extends Layer {
         if (!b) {
             return;
         }
-        // TODO hard code
-        // RIGHT_SIDE 9;
-        //  LEFT_SIDE 0;
         int shadow_left_X = RIGHT_SIDE, shadow_right_X = LEFT_SIDE;
         for (Point p : points) {
             shadow_left_X = p.x < shadow_left_X ? p.x : shadow_left_X;
